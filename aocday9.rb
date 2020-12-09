@@ -49,21 +49,32 @@ def part1(lines, preamble_num)
   # part 2
   # find continuous set of numbers that add up to the not calculable number
   puts "non calc number = #{non_calc}"
+  puts "NUmbers length = #{numbers.length}"
   # loop through numbers set and add up each item until sum = > non calc
   # if = then we found it and add together smallest and largest number in this contiguous range
   # if > then start again from next number in number list
   found = false
   pointer = 0
   sum = 0
+  puts "Numbers length = #{numbers.length} and number set = #{numbers}"
+  puts "Pointer = #{pointer} and points to #{numbers[pointer]}"
+  puts "Sum = #{sum} and found = #{found}"
   while pointer < numbers.length && !found
     contig_set = []
     i = pointer
+    #puts "contig set = #{contig_set} and i = #{i}"
     while i < numbers.length do
       sum += numbers[i]
+      #puts "sum currently = #{sum} after adding #{numbers[i]}"
       contig_set.append(numbers[i])
+      if sum > non_calc
+        #puts "it aint this contig set, try another"
+        sum = 0
+        break
+      end
       if sum == non_calc then
         contig_set = contig_set.sort
-        puts "Done! #{sum} smallest = #{contig_set[0]} * #{contig_set[contig_set.length-1]} = #{contig_set[0] * contig_set[contig_set.length-1]}"
+        puts "Done! #{sum} smallest = #{contig_set[0]} + #{contig_set[contig_set.length-1]} = #{contig_set[0] + contig_set[contig_set.length-1]}"
         found = true
         break
       end
