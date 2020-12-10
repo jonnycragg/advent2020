@@ -1,60 +1,47 @@
+# frozen_string_literal: true
+
 $program = []
+$new_program = []
 $counter = 0
 $run = 0
 def loadprogram(lines)
   line = 0
   lines.each do |i|
     instruction = []
-    linevalues = i.split(" ")
+    linevalues = i.split(' ')
     instruction[0] = line
     instruction[1] = linevalues[0]
     instruction[2] = linevalues[1][0]
-    instruction[3] = linevalues[1][1..linevalues[1].length-1]
+    instruction[3] = linevalues[1][1..linevalues[1].length - 1]
     instruction[4] = 0
     $program.push(instruction)
     line += 1
-    #puts "This line instructions = #{instruction}"
   end
-  puts "The loaded program = #{$program}"
+  #puts "The loaded program = #{$program}"
 end
 
 def execute(instructionNum)
   $run += 1
   next_instruction = 0
-  if instructionNum > $program.length
+  if instructionNum >= $program.length
     return true
   else
     instruction = $program[instructionNum]
-    puts "Processing this instruction = #{instruction}"
-    if instruction[4] > 0
-      return false
-    end
+    return false if (instruction[4]).positive?
   end
 
-  #puts "Processing this: #{instruction[0]}, #{instruction[1]}, #{instruction[2]}, #{instruction[3]}, #{instruction[4]}, "
   instruction[4] += 1
   case instruction[1]
-  when "nop"
+  when 'nop'
     next_instruction = instruction[0] + 1
-  when "acc"
-    if instruction[2] == "+"
-      $counter = $counter + instruction[3].to_i
-    end
-    if instruction[2] == "-"
-      $counter = $counter - instruction[3].to_i
-    end
+  when 'acc'
+    $counter = $counter + instruction[3].to_i if instruction[2] == '+'
+    $counter = $counter - instruction[3].to_i if instruction[2] == '-'
     next_instruction = instruction[0] + 1
-  when "jmp"
-    if instruction[2] == "+"
-      puts "In jmp +: #{instruction[0]} + #{Integer(instruction[3])} = next instruction #{next_instruction}"
-      next_instruction = instruction[0] + Integer(instruction[3])
-      puts "Next instruction = #{next_instruction}"
-    end
-    if instruction[2] == "-"
-      next_instruction = instruction[0] - Integer(instruction[3])
-    end
+  when 'jmp'
+    next_instruction = instruction[0] + Integer(instruction[3]) if instruction[2] == '+'
+    next_instruction = instruction[0] - Integer(instruction[3]) if instruction[2] == '-'
   end
-  puts "Next instruction = #{next_instruction}"
   execute(next_instruction)
 end
 
@@ -73,6 +60,7 @@ realinput = []
 File.open('inputday8').each { |line| realinput << line.chomp }
 loadprogram(realinput)
 puts "Program length = #{$program.length} and counter = #{$counter}"
+$new_program = $program
 execute(0)
 puts "Sooooo i think the counter = #{$counter} and ran #{$run}"
 
@@ -85,29 +73,31 @@ loadprogram(realinput)
 puts "Program length = #{$program.length} and counter = #{$counter}"
 
 # Loop through program and if find nop or jmp then flip it and run, if ran to end finish!
-program_temp = $program
-program_temp.each do |i|
-  if i[1] == "jmp" then
-    i[1] = "nop"
-    if execute(0) then
+next_line = 0
+count_attempts = 0
+loop do
+  puts "Been here #{count_attempts += 1}"
+  $counter = 0
+  $program = []
+  loadprogram(realinput)
+  $program.each do |i|
+    next if i[0] < next_line
+
+    if i[1] == 'jmp'
+      i[1] = 'nop'
+      next_line = i[0] + 1
       break
     end
+    next unless i[1] == 'nop'
+
+    i[1] = 'jmp'
+    next_line = i[0] + 1
+    break
   end
-  if i[1] == "nop" then
-    i[1] = "jmp"
-    if execute(0) then
-      break
-    end
+
+  if execute(0)
+    puts "Found right instruction! Count = #{$counter}"
+    break
   end
-
-
-
-end
-
-if execute(0) then
-  puts "Found right instruction! Count = #{$counter}"
-else
-  puts "Not completed correctly, counter = #{$counter}"
 end
 puts "Sooooo i think the counter = #{$counter} and ran #{$run}"
-
