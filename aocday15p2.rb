@@ -29,18 +29,6 @@ def part1(numbers,stopat)
   return numbers[stopat-1]
 end
 
-def find_last_occurences_diff(list,num)
-  low_index = 0
-  high_index = list.length
-  list.reverse.each_with_index do |x, index|
-    if x == num
-      low_index = list.length - (index + 1)
-      break
-    end
-  end
-  return high_index - low_index
-end
-
 # lets check with test data
 puts "Answer should be 436 => #{part1([0,3,6],2020)}"
 puts "Answer should be 1 => #{part1([1,3,2],2020)}"
